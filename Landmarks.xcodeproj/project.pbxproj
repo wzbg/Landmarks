@@ -44,6 +44,7 @@
 		451D1E9323B45B55006DD80D /* LandmarkList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7034301123A0AE340007022C /* LandmarkList.swift */; };
 		451D1E9523B4602F006DD80D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451D1E9423B4602F006DD80D /* ContentView.swift */; };
 		451D1E9723B49AF1006DD80D /* ImageUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451D1E9623B49AF1006DD80D /* ImageUIView.swift */; };
+		4542AD4C23C8707900DFA746 /* muscle in Resources */ = {isa = PBXBuildFile; fileRef = 4542AD4B23C8707900DFA746 /* muscle */; };
 		45A7190423B1E5F100A16F1B /* ProfileHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A7190323B1E5F100A16F1B /* ProfileHost.swift */; };
 		45A7190623B1E88D00A16F1B /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A7190523B1E88D00A16F1B /* Profile.swift */; };
 		45A7190823B1EE3E00A16F1B /* ProfileSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A7190723B1EE3E00A16F1B /* ProfileSummary.swift */; };
@@ -169,6 +170,7 @@
 		451D1E9023B44F1E006DD80D /* WatchMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMapView.swift; sourceTree = "<group>"; };
 		451D1E9423B4602F006DD80D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		451D1E9623B49AF1006DD80D /* ImageUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUIView.swift; sourceTree = "<group>"; };
+		4542AD4B23C8707900DFA746 /* muscle */ = {isa = PBXFileReference; lastKnownFileType = folder; path = muscle; sourceTree = "<group>"; };
 		45A7190323B1E5F100A16F1B /* ProfileHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHost.swift; sourceTree = "<group>"; };
 		45A7190523B1E88D00A16F1B /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		45A7190723B1EE3E00A16F1B /* ProfileSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSummary.swift; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 		7039EF49239F8FA20032E7FD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4542AD4B23C8707900DFA746 /* muscle */,
 				7034301523A0D2110007022C /* landmarkData.json */,
 				705CA79D23AC7CDD00B7C451 /* hikeData.json */,
 				45C70A0D23B5A36C002E065B /* 貂蝉.gif */,
@@ -581,6 +584,7 @@
 				7034305C23A0F3EC0007022C /* charleyrivers.jpg in Resources */,
 				7034305A23A0F3EC0007022C /* hiddenlake.jpg in Resources */,
 				7034306123A0F3EC0007022C /* umbagog.jpg in Resources */,
+				4542AD4C23C8707900DFA746 /* muscle in Resources */,
 				7034305F23A0F3EC0007022C /* silversalmoncreek.jpg in Resources */,
 				7034305B23A0F3EC0007022C /* icybay.jpg in Resources */,
 				7034306223A0F3EC0007022C /* twinlake.jpg in Resources */,
