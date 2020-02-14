@@ -1,8 +1,8 @@
 //
 //  PullToRefresh.swift
 //  SwiftUI-Common
-//  Pull Down To Refresh
-//  Pull Up To Load More
+//  Pull down to refresh
+//  Pull up to load more
 //
 //  Created by huanbing on 2020/2/14.
 //  Copyright © 2020 unrealce. All rights reserved.
@@ -11,8 +11,10 @@
 import SwiftUI
 
 struct RefreshableList<Content: View>: View {
-  @State private var showRefreshView = false
+  @State private var isRefreshing = false
   
+  var pullUpText = ("Pull up to load more", "Loading more")
+  var pullDownText = ("Pull down to refresh", "Refreshing")
   var pullUp: (() -> Void)?
   var pullDown: (() -> Void)?
   let content: () -> Content
@@ -20,11 +22,11 @@ struct RefreshableList<Content: View>: View {
   var body: some View {
     List {
       if pullDown != nil {
-        PullToRefreshView(showRefreshView: $showRefreshView)
+        RefreshBarView(isRefreshing: $isRefreshing, refreshText: pullDownText)
       }
       content()
       if pullUp != nil {
-        PullToRefreshView(showRefreshView: $showRefreshView)
+        RefreshBarView(isRefreshing: $isRefreshing, refreshText: pullUpText)
       }
     }
     .onPreferenceChange(RefreshListPrefKey.self) {
@@ -34,8 +36,8 @@ struct RefreshableList<Content: View>: View {
   }
   
   func refresh(offset: CGFloat) {
-    if(offset > 185 && self.showRefreshView == false) {
-      self.showRefreshView = true
+    if(offset > 185 && self.isRefreshing == false) {
+      self.isRefreshing = true
       DispatchQueue.main.async {
         if let pullUp = self.pullUp {
           pullUp()
@@ -44,35 +46,26 @@ struct RefreshableList<Content: View>: View {
           pullDown()
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-          self.showRefreshView = false
+          self.isRefreshing = false
         }
       }
     }
   }
 }
 
-struct PullToRefreshView: View {
-  @Binding var showRefreshView: Bool
-  
-  var body: some View {
-    GeometryReader {
-      RefreshBarView(isRefreshing: self.$showRefreshView)
-        .preference(key: RefreshListPrefKey.self, value: [$0.frame(in: .global).origin.y])
-    }
-  }
-}
-
 struct RefreshBarView: View {
   @Binding var isRefreshing: Bool
-  
   var refreshText = ("Pull to refresh", "Loading")
   
   var body: some View {
-    HStack {
-      Spacer()
-      ActivityIndicator(isAnimating: $isRefreshing)
-      Text(isRefreshing ? refreshText.1 : refreshText.0)
-      Spacer()
+    GeometryReader {
+      HStack {
+        Spacer()
+        ActivityIndicator(isAnimating: self.$isRefreshing)
+        Text(self.isRefreshing ? self.refreshText.1 : self.refreshText.0)
+        Spacer()
+      }
+      .preference(key: RefreshListPrefKey.self, value: [$0.frame(in: .global).origin.y])
     }
   }
 }
@@ -95,23 +88,15 @@ struct ActivityIndicator: UIViewRepresentable {
 
 struct RefreshListPrefKey: PreferenceKey {
   static var defaultValue = [CGFloat]()
+  
   static func reduce(value: inout [CGFloat], nextValue: () -> [CGFloat]) {
     value.append(contentsOf: nextValue())
   }
 }
 
-struct PullToRefreshView_Previews: PreviewProvider {
-  static var previews: some View {
-    VStack {
-      PullToRefreshView(showRefreshView: .constant(false))
-      PullToRefreshView(showRefreshView: .constant(true))
-    }
-  }
-}
-
 struct RefreshBarView_Previews: PreviewProvider {
   static var previews: some View {
-    VStack(spacing: 100) {
+    VStack {
       RefreshBarView(isRefreshing: .constant(false))
       RefreshBarView(isRefreshing: .constant(true))
     }
