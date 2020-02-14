@@ -9,25 +9,25 @@
 import SwiftUI
 
 struct RefreshableListDemo: View {
-  @State private var numbers = [[Double]]()
+  @State private var colors = [Color]()
   
   var body: some View {
     RefreshableList(pullDown: {
-      self.numbers.insert(self.randomDoubleArray(3), at: 0)
+      self.colors.insert(self.randomColor(), at: 0)
     }) {
-      ForEach(self.numbers, id: \.self) {
+      ForEach(self.colors, id: \.self) {
         Rectangle()
-          .foregroundColor(Color(red: $0[0], green: $0[1], blue: $0[2]))
+          .foregroundColor($0)
       }
     }
   }
   
-  private func randomDoubleArray(_ count: Int) -> [Double] {
-    var array = [Double]()
-    for _ in 0 ..< count {
-      array.append(Double.random(in: 0 ... 1))
-    }
-    return array
+  private func randomColor() -> Color {
+    Color(red: randomDouble(), green: randomDouble(), blue: randomDouble())
+  }
+  
+  private func randomDouble() -> Double {
+    Double.random(in: 0 ... 1)
   }
 }
 
