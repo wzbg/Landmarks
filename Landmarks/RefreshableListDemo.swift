@@ -11,11 +11,8 @@ import SwiftUI
 struct RefreshableListDemo: View {
   @State private var numbers = [[Double]]()
   
-  @State public var showRefreshView = false
-  @State public var offsetY: CGFloat = 0
-  
   var body: some View {
-    RefreshableList(showRefreshView: $showRefreshView, offsetY: $offsetY, action: {
+    RefreshableList(action: {
       self.numbers.insert(
         [self.randomDouble(), self.randomDouble(), self.randomDouble()],
         at: 0

@@ -10,31 +10,9 @@
 
 import SwiftUI
 
-struct RefreshableNavigationView<Content: View>: View {
-  @State var showRefreshView = false
-  @State var offsetY: CGFloat = 0
-  
-  var title: String
-  let action: () -> Void
-  let content: () -> Content
-  
-  var body: some View {
-    NavigationView{
-      RefreshableList(showRefreshView: $showRefreshView, offsetY: $offsetY, action: self.action) {
-        self.content()
-      }
-      .navigationBarTitle(title)
-    }
-    .offset(x: 0, y: self.showRefreshView ? 34 : 0)
-    .onAppear{
-      UITableView.appearance().separatorColor = .clear
-    }
-  }
-}
-
 struct RefreshableList<Content: View>: View {
-  @Binding var showRefreshView: Bool
-  @Binding var offsetY: CGFloat
+  @State private var showRefreshView = false
+  @State private var offsetY: CGFloat = 0
   
   let action: () -> Void
   let content: () -> Content
@@ -49,7 +27,6 @@ struct RefreshableList<Content: View>: View {
       self.offsetY = offsetY
       self.refresh(offset: offsetY)
     }
-    .offset(x: 0, y: -40)
   }
   
   func refresh(offset: CGFloat) {
