@@ -1,9 +1,11 @@
 //
-//  Spinner.swift
-//  PullToRefresh
+//  PullToRefresh.swift
+//  SwiftUI-Common
+//  Pull Down To Refresh
+//  Pull Up To Load More
 //
-//  Created by András Samu on 2019. 09. 15..
-//  Copyright © 2019. András Samu. All rights reserved.
+//  Created by huanbing on 2020/2/14.
+//  Copyright © 2020 unrealce. All rights reserved.
 //
 
 import SwiftUI
