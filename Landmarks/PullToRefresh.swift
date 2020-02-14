@@ -44,7 +44,7 @@ struct RefreshableList<Content: View>: View {
       PullToRefreshView(showRefreshView: $showRefreshView, offsetY: $offsetY)
       content()
     }
-    .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
+    .onPreferenceChange(RefreshListPrefKey.self) { values in
       guard let bounds = values.first?.bounds else { return }
       self.offsetY = bounds.origin.y
       self.refresh(offset: self.offsetY)
@@ -72,7 +72,7 @@ struct PullToRefreshView: View {
     GeometryReader {
       RefreshBarView(isRefreshing: self.$showRefreshView, offsetY: self.$offsetY)
         .opacity(Double(($0.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
-        .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(bounds: $0.frame(in: CoordinateSpace.global))])
+        .preference(key: RefreshListPrefKey.self, value: [RefreshListPrefKey.PrefValue(bounds: $0.frame(in: CoordinateSpace.global))])
         .offset(x: 0, y: -90)
     }
   }
@@ -116,23 +116,20 @@ struct ActivityIndicator: UIViewRepresentable {
   }
 }
 
-struct RefreshableKeyTypes {
-  struct PrefData: Equatable {
+struct RefreshListPrefKey: PreferenceKey {
+  struct PrefValue: Equatable {
     let bounds: CGRect
   }
-
-  struct PrefKey: PreferenceKey {
-    static var defaultValue: [PrefData] = []
-
-    static func reduce(value: inout [PrefData], nextValue: () -> [PrefData]) {
-      value.append(contentsOf: nextValue())
-    }
+  
+  static var defaultValue = [PrefValue]()
+  static func reduce(value: inout [PrefValue], nextValue: () -> [PrefValue]) {
+    value.append(contentsOf: nextValue())
   }
 }
 
 struct PullToRefreshView_Previews: PreviewProvider {
   static var previews: some View {
-    PullToRefreshView(showRefreshView: .constant(true), offsetY: .constant(1))
+    PullToRefreshView(showRefreshView: .constant(false), offsetY: .constant(185))
   }
 }
 
