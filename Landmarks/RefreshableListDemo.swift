@@ -12,9 +12,15 @@ struct RefreshableListDemo: View {
   @State private var colors = [Color]()
   
   var body: some View {
-    RefreshableList(pullDown: {
-      self.colors.insert(self.randomColor(), at: 0)
-    }) {
+    RefreshableList(
+      pullUp: {
+        self.colors.append(self.randomColor())
+      }
+      ,
+      pullDown: {
+        self.colors.insert(self.randomColor(), at: 0)
+      }
+    ) {
       ForEach(self.colors, id: \.self) {
         Rectangle()
           .foregroundColor($0)

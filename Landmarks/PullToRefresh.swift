@@ -12,31 +12,23 @@ import SwiftUI
 
 struct RefreshableList<Content: View>: View {
   @State private var showRefreshView = false
-  @State private var offsetY: CGFloat = 0
   
-  let pullDown: (() -> Void)?
+  var pullUp: (() -> Void)?
+  var pullDown: (() -> Void)?
   let content: () -> Content
-  
-  init(content: @escaping () -> Content) {
-    self.pullDown = nil
-    self.content = content
-  }
-  
-  init(pullDown: (() -> Void)?, content: @escaping () -> Content) {
-    self.pullDown = pullDown
-    self.content = content
-  }
   
   var body: some View {
     List {
       if pullDown != nil {
-        PullToRefreshView(showRefreshView: $showRefreshView, offsetY: $offsetY)
+        PullToRefreshView(showRefreshView: $showRefreshView)
       }
       content()
+      if pullUp != nil {
+        PullToRefreshView(showRefreshView: $showRefreshView)
+      }
     }
     .onPreferenceChange(RefreshListPrefKey.self) {
       guard let offsetY = $0.first else { return }
-      self.offsetY = offsetY
       self.refresh(offset: offsetY)
     }
   }
@@ -45,10 +37,12 @@ struct RefreshableList<Content: View>: View {
     if(offset > 185 && self.showRefreshView == false) {
       self.showRefreshView = true
       DispatchQueue.main.async {
-        guard let pullDown = self.pullDown else {
-          return
+        if let pullUp = self.pullUp {
+          pullUp()
         }
-        pullDown()
+        if let pullDown = self.pullDown {
+          pullDown()
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
           self.showRefreshView = false
         }
@@ -59,11 +53,10 @@ struct RefreshableList<Content: View>: View {
 
 struct PullToRefreshView: View {
   @Binding var showRefreshView: Bool
-  @Binding var offsetY: CGFloat
   
   var body: some View {
     GeometryReader {
-      RefreshBarView(isRefreshing: self.$showRefreshView, offsetY: self.$offsetY)
+      RefreshBarView(isRefreshing: self.$showRefreshView)
         .preference(key: RefreshListPrefKey.self, value: [$0.frame(in: .global).origin.y])
     }
   }
@@ -71,21 +64,14 @@ struct PullToRefreshView: View {
 
 struct RefreshBarView: View {
   @Binding var isRefreshing: Bool
-  @Binding var offsetY: CGFloat
-  var refreshOffsetY: CGFloat = 185
-  var refreshText = ("下拉可以刷新数据", "松开立即刷新数据", "正在刷新数据中...")
+  
+  var refreshText = ("Pull to refresh", "Loading")
   
   var body: some View {
     HStack {
       Spacer()
       ActivityIndicator(isAnimating: $isRefreshing)
-      if isRefreshing {
-        Text(refreshText.2)
-      } else if offsetY > refreshOffsetY {
-        Text(refreshText.1)
-      } else {
-        Text(refreshText.0)
-      }
+      Text(isRefreshing ? refreshText.1 : refreshText.0)
       Spacer()
     }
   }
@@ -116,10 +102,9 @@ struct RefreshListPrefKey: PreferenceKey {
 
 struct PullToRefreshView_Previews: PreviewProvider {
   static var previews: some View {
-    VStack(spacing: 100) {
-      PullToRefreshView(showRefreshView: .constant(false), offsetY: .constant(185))
-      PullToRefreshView(showRefreshView: .constant(false), offsetY: .constant(200))
-      PullToRefreshView(showRefreshView: .constant(true), offsetY: .constant(215))
+    VStack {
+      PullToRefreshView(showRefreshView: .constant(false))
+      PullToRefreshView(showRefreshView: .constant(true))
     }
   }
 }
@@ -127,9 +112,8 @@ struct PullToRefreshView_Previews: PreviewProvider {
 struct RefreshBarView_Previews: PreviewProvider {
   static var previews: some View {
     VStack(spacing: 100) {
-      RefreshBarView(isRefreshing: .constant(false), offsetY: .constant(185))
-      RefreshBarView(isRefreshing: .constant(false), offsetY: .constant(200))
-      RefreshBarView(isRefreshing: .constant(true), offsetY: .constant(215))
+      RefreshBarView(isRefreshing: .constant(false))
+      RefreshBarView(isRefreshing: .constant(true))
     }
   }
 }
