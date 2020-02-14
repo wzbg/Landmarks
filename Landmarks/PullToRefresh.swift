@@ -35,14 +35,9 @@ struct RefreshableNavigationView<Content: View>: View {
 struct RefreshableList<Content: View>: View {
   @Binding var showRefreshView: Bool
   @Binding var pullStatus: CGFloat
+  
   let action: () -> Void
   let content: () -> Content
-  init(showRefreshView: Binding<Bool>, pullStatus: Binding<CGFloat>, action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
-    self._showRefreshView = showRefreshView
-    self._pullStatus = pullStatus
-    self.action = action
-    self.content = content
-  }
   
   var body: some View {
     List{
