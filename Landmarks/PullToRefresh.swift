@@ -11,8 +11,8 @@
 import SwiftUI
 
 struct RefreshableNavigationView<Content: View>: View {
-  @State public var showRefreshView = false
-  @State public var pullStatus: CGFloat = 0
+  @State var showRefreshView = false
+  @State var offsetY: CGFloat = 0
   
   var title: String
   let action: () -> Void
@@ -20,7 +20,7 @@ struct RefreshableNavigationView<Content: View>: View {
   
   var body: some View {
     NavigationView{
-      RefreshableList(showRefreshView: $showRefreshView, pullStatus: $pullStatus, action: self.action) {
+      RefreshableList(showRefreshView: $showRefreshView, offsetY: $offsetY, action: self.action) {
         self.content()
       }
       .navigationBarTitle(title)
@@ -34,20 +34,20 @@ struct RefreshableNavigationView<Content: View>: View {
 
 struct RefreshableList<Content: View>: View {
   @Binding var showRefreshView: Bool
-  @Binding var pullStatus: CGFloat
+  @Binding var offsetY: CGFloat
   
   let action: () -> Void
   let content: () -> Content
   
   var body: some View {
-    List{
-      PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
+    List {
+      PullToRefreshView(showRefreshView: $showRefreshView, offsetY: $offsetY)
       content()
     }
     .onPreferenceChange(RefreshableKeyTypes.PrefKey.self) { values in
       guard let bounds = values.first?.bounds else { return }
-      self.pullStatus = CGFloat((bounds.origin.y - 106) / 80)
-      self.refresh(offset: bounds.origin.y)
+      self.offsetY = bounds.origin.y
+      self.refresh(offset: self.offsetY)
     }.offset(x: 0, y: -40)
   }
   
@@ -66,34 +66,14 @@ struct RefreshableList<Content: View>: View {
 
 struct PullToRefreshView: View {
   @Binding var showRefreshView: Bool
-  @Binding var pullStatus: CGFloat
+  @Binding var offsetY: CGFloat
   
   var body: some View {
     GeometryReader{ geometry in
-      RefreshView(isRefreshing: self.$showRefreshView, status: self.$pullStatus)
+      RefreshBarView(isRefreshing: self.$showRefreshView, offsetY: self.$offsetY)
         .opacity(Double((geometry.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
         .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(bounds: geometry.frame(in: CoordinateSpace.global))])
         .offset(x: 0, y: -90)
-    }
-  }
-}
-
-struct RefreshView: View {
-  @Binding var isRefreshing: Bool
-  @Binding var status: CGFloat
-  
-  var body: some View {
-    HStack {
-      Spacer()
-      VStack(alignment: .center) {
-        if (!isRefreshing) {
-          Spinner(percentage: $status)
-        } else {
-          ActivityIndicator(isAnimating: .constant(true), style: .large)
-        }
-        Text(isRefreshing ? "Loading" : "Pull to refresh").font(.caption)
-      }
-      Spacer()
     }
   }
 }
@@ -117,26 +97,6 @@ struct RefreshBarView: View {
       }
       Spacer()
     }
-  }
-}
-
-struct Spinner: View {
-  @Binding var percentage: CGFloat
-  
-  var body: some View {
-    GeometryReader { geometry in
-      ForEach(1...10, id: \.self) {
-        Rectangle()
-          .fill(Color.gray)
-          .cornerRadius(1)
-          .frame(width: 2.5, height: 8)
-          .opacity(self.percentage * 10 >= CGFloat($0) ? Double($0)/10.0 : 0)
-          .offset(x: 0, y: -8)
-          .rotationEffect(.degrees(Double(36 * $0)), anchor: .bottom)
-      }
-      .offset(x: 20, y: 12)
-    }
-    .frame(width: 40, height: 40)
   }
 }
 
@@ -177,12 +137,6 @@ struct RefreshBarView_Previews: PreviewProvider {
       RefreshBarView(isRefreshing: .constant(false), offsetY: .constant(200))
       RefreshBarView(isRefreshing: .constant(true), offsetY: .constant(215))
     }
-  }
-}
-
-struct Spinner_Previews: PreviewProvider {
-  static var previews: some View {
-    Spinner(percentage: .constant(1)) // 0.1 ~ 1
   }
 }
 

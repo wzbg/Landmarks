@@ -12,10 +12,10 @@ struct RefreshableListDemo: View {
   @State private var numbers = [[Double]]()
   
   @State public var showRefreshView = false
-  @State public var pullStatus: CGFloat = 0
+  @State public var offsetY: CGFloat = 0
   
   var body: some View {
-    RefreshableList(showRefreshView: $showRefreshView, pullStatus: $pullStatus, action: {
+    RefreshableList(showRefreshView: $showRefreshView, offsetY: $offsetY, action: {
       self.numbers.insert(
         [self.randomDouble(), self.randomDouble(), self.randomDouble()],
         at: 0
