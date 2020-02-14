@@ -10,20 +10,15 @@
 
 import SwiftUI
 
-public struct RefreshableNavigationView<Content: View>: View {
-  let content: () -> Content
-  let action: () -> Void
-  @State public var showRefreshView: Bool = false
+struct RefreshableNavigationView<Content: View>: View {
+  @State public var showRefreshView = false
   @State public var pullStatus: CGFloat = 0
-  private var title: String
-
-  public init(title:String, action: @escaping () -> Void ,@ViewBuilder content: @escaping () -> Content) {
-    self.title = title
-    self.action = action
-    self.content = content
-  }
   
-  public var body: some View {
+  var title: String
+  let action: () -> Void
+  let content: () -> Content
+  
+  var body: some View {
     NavigationView{
       RefreshableList(showRefreshView: $showRefreshView, pullStatus: $pullStatus, action: self.action) {
         self.content()
@@ -37,19 +32,19 @@ public struct RefreshableNavigationView<Content: View>: View {
   }
 }
 
-public struct RefreshableList<Content: View>: View {
+struct RefreshableList<Content: View>: View {
   @Binding var showRefreshView: Bool
   @Binding var pullStatus: CGFloat
   let action: () -> Void
   let content: () -> Content
-  public init(showRefreshView: Binding<Bool>, pullStatus: Binding<CGFloat>, action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
+  init(showRefreshView: Binding<Bool>, pullStatus: Binding<CGFloat>, action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
     self._showRefreshView = showRefreshView
     self._pullStatus = pullStatus
     self.action = action
     self.content = content
   }
   
-  public var body: some View {
+  var body: some View {
     List{
       PullToRefreshView(showRefreshView: $showRefreshView, pullStatus: $pullStatus)
       content()
