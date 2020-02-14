@@ -69,10 +69,10 @@ struct PullToRefreshView: View {
   @Binding var offsetY: CGFloat
   
   var body: some View {
-    GeometryReader{ geometry in
+    GeometryReader {
       RefreshBarView(isRefreshing: self.$showRefreshView, offsetY: self.$offsetY)
-        .opacity(Double((geometry.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
-        .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(bounds: geometry.frame(in: CoordinateSpace.global))])
+        .opacity(Double(($0.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
+        .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(bounds: $0.frame(in: CoordinateSpace.global))])
         .offset(x: 0, y: -90)
     }
   }
@@ -127,6 +127,12 @@ struct RefreshableKeyTypes {
     static func reduce(value: inout [PrefData], nextValue: () -> [PrefData]) {
       value.append(contentsOf: nextValue())
     }
+  }
+}
+
+struct PullToRefreshView_Previews: PreviewProvider {
+  static var previews: some View {
+    PullToRefreshView(showRefreshView: .constant(true), offsetY: .constant(1))
   }
 }
 
