@@ -11,8 +11,10 @@
 import SwiftUI
 
 struct RefreshableList<Content: View>: View {
+  @State private var isLoadingMore = false
   @State private var isRefreshing = false
   
+  var offsetValue: CGFloat = 185
   var pullUpText = ("Pull up to load more", "Loading more")
   var pullDownText = ("Pull down to refresh", "Refreshing")
   var pullUp: (() -> Void)?
@@ -26,28 +28,27 @@ struct RefreshableList<Content: View>: View {
       }
       content()
       if pullUp != nil {
-        RefreshBarView(isRefreshing: $isRefreshing, refreshText: pullUpText)
+        RefreshBarView(isRefreshing: $isLoadingMore, refreshText: pullUpText)
       }
     }
     .onPreferenceChange(RefreshListPrefKey.self) {
       guard let offsetY = $0.first else { return }
-      self.refresh(offset: offsetY)
+      self.refresh(offsetY: offsetY)
     }
   }
   
-  func refresh(offset: CGFloat) {
-    if(offset > 185 && self.isRefreshing == false) {
-      self.isRefreshing = true
-      DispatchQueue.main.async {
-        if let pullUp = self.pullUp {
-          pullUp()
-        }
-        if let pullDown = self.pullDown {
-          pullDown()
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-          self.isRefreshing = false
-        }
+  private func refresh(offsetY: CGFloat) {
+    guard offsetY > offsetValue && self.isRefreshing == false else {
+      return
+    }
+    self.isRefreshing = true
+    DispatchQueue.main.async {
+      guard let pullDown = self.pullDown else {
+        return
+      }
+      pullDown()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        self.isRefreshing = false
       }
     }
   }
