@@ -79,11 +79,11 @@ struct PullToRefreshView: View {
 }
 
 struct RefreshView: View {
-  @Binding var isRefreshing:Bool
+  @Binding var isRefreshing: Bool
   @Binding var status: CGFloat
   
   var body: some View {
-    HStack{
+    HStack {
       Spacer()
       VStack(alignment: .center) {
         if (!isRefreshing) {
@@ -102,7 +102,7 @@ struct Spinner: View {
   @Binding var percentage: CGFloat
   
   var body: some View {
-    GeometryReader{ geometry in
+    GeometryReader { geometry in
       ForEach(1...10, id: \.self) {
         Rectangle()
           .fill(Color.gray)
@@ -144,6 +144,15 @@ struct RefreshableKeyTypes {
 
     static func reduce(value: inout [PrefData], nextValue: () -> [PrefData]) {
       value.append(contentsOf: nextValue())
+    }
+  }
+}
+
+struct RefreshView_Previews: PreviewProvider {
+  static var previews: some View {
+    VStack {
+      RefreshView(isRefreshing: .constant(false), status: .constant(1))
+      RefreshView(isRefreshing: .constant(true), status: .constant(1))
     }
   }
 }
