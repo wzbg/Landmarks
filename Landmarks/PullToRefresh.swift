@@ -98,6 +98,28 @@ struct RefreshView: View {
   }
 }
 
+struct RefreshBarView: View {
+  @Binding var isRefreshing: Bool
+  @Binding var offsetY: CGFloat
+  var refreshOffsetY: CGFloat = 185
+  var refreshText = ("下拉可以刷新数据", "松开立即刷新数据", "正在刷新数据中...")
+  
+  var body: some View {
+    HStack {
+      Spacer()
+      ActivityIndicator(isAnimating: $isRefreshing)
+      if isRefreshing {
+        Text(refreshText.2)
+      } else if offsetY > refreshOffsetY {
+        Text(refreshText.1)
+      } else {
+        Text(refreshText.0)
+      }
+      Spacer()
+    }
+  }
+}
+
 struct Spinner: View {
   @Binding var percentage: CGFloat
   
@@ -148,11 +170,12 @@ struct RefreshableKeyTypes {
   }
 }
 
-struct RefreshView_Previews: PreviewProvider {
+struct RefreshBarView_Previews: PreviewProvider {
   static var previews: some View {
-    VStack {
-      RefreshView(isRefreshing: .constant(false), status: .constant(1))
-      RefreshView(isRefreshing: .constant(true), status: .constant(1))
+    VStack(spacing: 100) {
+      RefreshBarView(isRefreshing: .constant(false), offsetY: .constant(185))
+      RefreshBarView(isRefreshing: .constant(false), offsetY: .constant(200))
+      RefreshBarView(isRefreshing: .constant(true), offsetY: .constant(215))
     }
   }
 }
