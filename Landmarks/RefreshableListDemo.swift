@@ -13,6 +13,8 @@ struct RefreshableListDemo: View {
   
   var body: some View {
     RefreshableList(
+      pullUpText: ("上拉可以加载更多", "正在加载更多数据..."),
+      pullDownText: ("下拉可以刷新数据", "正在刷新数据中..."),
       pullUp: {
         self.colors.append(self.randomColor())
       }

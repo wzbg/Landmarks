@@ -32,8 +32,13 @@ struct RefreshableList<Content: View>: View {
       }
     }
     .onPreferenceChange(RefreshListPrefKey.self) {
-      guard let offsetY = $0.first else { return }
-      self.refresh(offsetY: offsetY)
+      guard let offsetY = $0.last else { return }
+      if self.pullDown != nil {
+        self.refresh(offsetY: offsetY)
+      }
+      if self.pullUp != nil {
+        self.loadMore(offsetY: offsetY)
+      }
     }
   }
   
@@ -49,6 +54,22 @@ struct RefreshableList<Content: View>: View {
       pullDown()
       DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
         self.isRefreshing = false
+      }
+    }
+  }
+  
+  private func loadMore(offsetY: CGFloat) {
+    guard offsetY < -offsetValue && self.isLoadingMore == false else {
+      return
+    }
+    self.isLoadingMore = true
+    DispatchQueue.main.async {
+      guard let pullUp = self.pullUp else {
+        return
+      }
+      pullUp()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        self.isLoadingMore = false
       }
     }
   }
