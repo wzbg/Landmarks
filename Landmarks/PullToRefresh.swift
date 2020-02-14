@@ -64,28 +64,24 @@ struct RefreshableList<Content: View>: View {
   }
 }
 
-struct Spinner: View {
-  @Binding var percentage: CGFloat
+struct PullToRefreshView: View {
+  @Binding var showRefreshView: Bool
+  @Binding var pullStatus: CGFloat
+  
   var body: some View {
     GeometryReader{ geometry in
-      ForEach(1...10, id: \.self) { i in
-        Rectangle()
-          .fill(Color.gray)
-          .cornerRadius(1)
-          .frame(width: 2.5, height: 8)
-          .opacity(self.percentage * 10 >= CGFloat(i) ? Double(i)/10.0 : 0)
-          .offset(x: 0, y: -8)
-          .rotationEffect(.degrees(Double(36 * i)), anchor: .bottom)
-      }
-      .offset(x: 20, y: 12)
+      RefreshView(isRefreshing: self.$showRefreshView, status: self.$pullStatus)
+        .opacity(Double((geometry.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
+        .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(bounds: geometry.frame(in: CoordinateSpace.global))])
+        .offset(x: 0, y: -90)
     }
-    .frame(width: 40, height: 40)
   }
 }
 
 struct RefreshView: View {
   @Binding var isRefreshing:Bool
   @Binding var status: CGFloat
+  
   var body: some View {
     HStack{
       Spacer()
@@ -102,16 +98,23 @@ struct RefreshView: View {
   }
 }
 
-struct PullToRefreshView: View {
-  @Binding var showRefreshView: Bool
-  @Binding var pullStatus: CGFloat
+struct Spinner: View {
+  @Binding var percentage: CGFloat
+  
   var body: some View {
     GeometryReader{ geometry in
-      RefreshView(isRefreshing: self.$showRefreshView, status: self.$pullStatus)
-        .opacity(Double((geometry.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
-        .preference(key: RefreshableKeyTypes.PrefKey.self, value: [RefreshableKeyTypes.PrefData(bounds: geometry.frame(in: CoordinateSpace.global))])
-        .offset(x: 0, y: -90)
+      ForEach(1...10, id: \.self) { i in
+        Rectangle()
+          .fill(Color.gray)
+          .cornerRadius(1)
+          .frame(width: 2.5, height: 8)
+          .opacity(self.percentage * 10 >= CGFloat(i) ? Double(i)/10.0 : 0)
+          .offset(x: 0, y: -8)
+          .rotationEffect(.degrees(Double(36 * i)), anchor: .bottom)
+      }
+      .offset(x: 20, y: 12)
     }
+    .frame(width: 40, height: 40)
   }
 }
 
