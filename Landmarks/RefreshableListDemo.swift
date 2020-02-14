@@ -12,7 +12,7 @@ struct RefreshableListDemo: View {
   @State private var numbers = [[Double]]()
   
   var body: some View {
-    RefreshableList(action: {
+    RefreshableList(pullDown: {
       self.numbers.insert(
         [self.randomDouble(), self.randomDouble(), self.randomDouble()],
         at: 0

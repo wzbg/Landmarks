@@ -14,12 +14,24 @@ struct RefreshableList<Content: View>: View {
   @State private var showRefreshView = false
   @State private var offsetY: CGFloat = 0
   
-  let action: () -> Void
+  let pullDown: (() -> Void)?
   let content: () -> Content
+  
+  init(content: @escaping () -> Content) {
+    self.pullDown = nil
+    self.content = content
+  }
+  
+  init(pullDown: (() -> Void)?, content: @escaping () -> Content) {
+    self.pullDown = pullDown
+    self.content = content
+  }
   
   var body: some View {
     List {
-      PullToRefreshView(showRefreshView: $showRefreshView, offsetY: $offsetY)
+      if pullDown != nil {
+        PullToRefreshView(showRefreshView: $showRefreshView, offsetY: $offsetY)
+      }
       content()
     }
     .onPreferenceChange(RefreshListPrefKey.self) {
@@ -33,7 +45,10 @@ struct RefreshableList<Content: View>: View {
     if(offset > 185 && self.showRefreshView == false) {
       self.showRefreshView = true
       DispatchQueue.main.async {
-        self.action()
+        guard let pullDown = self.pullDown else {
+          return
+        }
+        pullDown()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
           self.showRefreshView = false
         }
