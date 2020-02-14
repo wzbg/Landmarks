@@ -13,10 +13,7 @@ struct RefreshableListDemo: View {
   
   var body: some View {
     RefreshableList(pullDown: {
-      self.numbers.insert(
-        [self.randomDouble(), self.randomDouble(), self.randomDouble()],
-        at: 0
-      )
+      self.numbers.insert(self.randomDoubleArray(3), at: 0)
     }) {
       ForEach(self.numbers, id: \.self) {
         Rectangle()
@@ -25,8 +22,12 @@ struct RefreshableListDemo: View {
     }
   }
   
-  private func randomDouble() -> Double {
-    Double.random(in: 0 ... 1)
+  private func randomDoubleArray(_ count: Int) -> [Double] {
+    var array = [Double]()
+    for _ in 0 ..< count {
+      array.append(Double.random(in: 0 ... 1))
+    }
+    return array
   }
 }
 
