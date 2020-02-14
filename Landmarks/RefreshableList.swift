@@ -14,7 +14,7 @@ struct RefreshableList<Content: View>: View {
   @State private var isLoadingMore = false
   @State private var isRefreshing = false
   
-  var offsetValue: CGFloat = 185
+  var offsetValue: CGFloat = 20
   var pullUpText = ("Pull up to load more", "Loading more")
   var pullDownText = ("Pull down to refresh", "Refreshing")
   var pullUp: (() -> Void)?
@@ -31,15 +31,24 @@ struct RefreshableList<Content: View>: View {
         RefreshBarView(isRefreshing: $isLoadingMore, refreshText: pullUpText)
       }
     }
-    .onPreferenceChange(RefreshListPrefKey.self) {
-      guard let offsetY = $0.last else { return }
-      if self.pullDown != nil {
+    .gesture(DragGesture().onChanged({
+      let offsetY = $0.location.y - $0.startLocation.y
+      if self.pullDown != nil && offsetY > 0 {
         self.refresh(offsetY: offsetY)
       }
-      if self.pullUp != nil {
+      if self.pullUp != nil && offsetY < 0 {
         self.loadMore(offsetY: offsetY)
       }
-    }
+    }))
+//    .onPreferenceChange(RefreshListPrefKey.self) {
+//      guard let offsetY = $0.last else { return }
+//      if self.pullDown != nil {
+//        self.refresh(offsetY: offsetY)
+//      }
+//      if self.pullUp != nil {
+//        self.loadMore(offsetY: offsetY)
+//      }
+//    }
   }
   
   private func refresh(offsetY: CGFloat) {
