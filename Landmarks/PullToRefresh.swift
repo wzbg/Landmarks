@@ -44,11 +44,12 @@ struct RefreshableList<Content: View>: View {
       PullToRefreshView(showRefreshView: $showRefreshView, offsetY: $offsetY)
       content()
     }
-    .onPreferenceChange(RefreshListPrefKey.self) { values in
-      guard let bounds = values.first?.bounds else { return }
-      self.offsetY = bounds.origin.y
-      self.refresh(offset: self.offsetY)
-    }.offset(x: 0, y: -40)
+    .onPreferenceChange(RefreshListPrefKey.self) {
+      guard let offsetY = $0.first else { return }
+      self.offsetY = offsetY
+      self.refresh(offset: offsetY)
+    }
+    .offset(x: 0, y: -40)
   }
   
   func refresh(offset: CGFloat) {
@@ -71,10 +72,7 @@ struct PullToRefreshView: View {
   var body: some View {
     GeometryReader {
       RefreshBarView(isRefreshing: self.$showRefreshView, offsetY: self.$offsetY)
-        .preference(
-          key: RefreshListPrefKey.self,
-          value: [RefreshListPrefKey.PrefValue(bounds: $0.frame(in: .global))]
-        )
+        .preference(key: RefreshListPrefKey.self, value: [$0.frame(in: .global).origin.y])
     }
   }
 }
@@ -118,12 +116,8 @@ struct ActivityIndicator: UIViewRepresentable {
 }
 
 struct RefreshListPrefKey: PreferenceKey {
-  struct PrefValue: Equatable {
-    let bounds: CGRect
-  }
-  
-  static var defaultValue = [PrefValue]()
-  static func reduce(value: inout [PrefValue], nextValue: () -> [PrefValue]) {
+  static var defaultValue = [CGFloat]()
+  static func reduce(value: inout [CGFloat], nextValue: () -> [CGFloat]) {
     value.append(contentsOf: nextValue())
   }
 }
