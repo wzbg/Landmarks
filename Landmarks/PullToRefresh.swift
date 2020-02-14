@@ -103,14 +103,14 @@ struct Spinner: View {
   
   var body: some View {
     GeometryReader{ geometry in
-      ForEach(1...10, id: \.self) { i in
+      ForEach(1...10, id: \.self) {
         Rectangle()
           .fill(Color.gray)
           .cornerRadius(1)
           .frame(width: 2.5, height: 8)
-          .opacity(self.percentage * 10 >= CGFloat(i) ? Double(i)/10.0 : 0)
+          .opacity(self.percentage * 10 >= CGFloat($0) ? Double($0)/10.0 : 0)
           .offset(x: 0, y: -8)
-          .rotationEffect(.degrees(Double(36 * i)), anchor: .bottom)
+          .rotationEffect(.degrees(Double(36 * $0)), anchor: .bottom)
       }
       .offset(x: 20, y: 12)
     }
@@ -120,13 +120,16 @@ struct Spinner: View {
 
 struct ActivityIndicator: UIViewRepresentable {
   @Binding var isAnimating: Bool
-  let style: UIActivityIndicatorView.Style
+  var style: UIActivityIndicatorView.Style?
 
-  func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
+  func makeUIView(context: Context) -> UIActivityIndicatorView {
+    guard let style = style else {
+      return UIActivityIndicatorView()
+    }
     return UIActivityIndicatorView(style: style)
   }
 
-  func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
+  func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
     isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
   }
 }
@@ -142,13 +145,17 @@ struct RefreshableKeyTypes {
     static func reduce(value: inout [PrefData], nextValue: () -> [PrefData]) {
       value.append(contentsOf: nextValue())
     }
-
-    typealias Value = [PrefData]
   }
 }
 
 struct Spinner_Previews: PreviewProvider {
   static var previews: some View {
-    Spinner(percentage: .constant(1))
+    Spinner(percentage: .constant(1)) // 0.1 ~ 1
+  }
+}
+
+struct ActivityIndicator_Previews: PreviewProvider {
+  static var previews: some View {
+    ActivityIndicator(isAnimating: .constant(true), style: .large)
   }
 }
