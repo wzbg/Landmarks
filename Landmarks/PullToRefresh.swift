@@ -71,9 +71,10 @@ struct PullToRefreshView: View {
   var body: some View {
     GeometryReader {
       RefreshBarView(isRefreshing: self.$showRefreshView, offsetY: self.$offsetY)
-        .opacity(Double(($0.frame(in: CoordinateSpace.global).origin.y - 106) / 80))
-        .preference(key: RefreshListPrefKey.self, value: [RefreshListPrefKey.PrefValue(bounds: $0.frame(in: CoordinateSpace.global))])
-        .offset(x: 0, y: -90)
+        .preference(
+          key: RefreshListPrefKey.self,
+          value: [RefreshListPrefKey.PrefValue(bounds: $0.frame(in: .global))]
+        )
     }
   }
 }
@@ -129,7 +130,11 @@ struct RefreshListPrefKey: PreferenceKey {
 
 struct PullToRefreshView_Previews: PreviewProvider {
   static var previews: some View {
-    PullToRefreshView(showRefreshView: .constant(false), offsetY: .constant(185))
+    VStack(spacing: 100) {
+      PullToRefreshView(showRefreshView: .constant(false), offsetY: .constant(185))
+      PullToRefreshView(showRefreshView: .constant(false), offsetY: .constant(200))
+      PullToRefreshView(showRefreshView: .constant(true), offsetY: .constant(215))
+    }
   }
 }
 
